@@ -1,8 +1,15 @@
 package nagai.tinychat.bbs;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Message {
     private String uuid;
@@ -42,33 +49,34 @@ public class Message {
         return userName;
     }
 
-    // instance creation
-
     public ArrayList<String> getReply() {
         return reply;
     }
 
-    // TODO:制御文字の除去
-    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply) {
-        return new Message(UUID.randomUUID().toString(), LocalDateTime.now(), text, userID, userName, reply);
+    // instance creation
+
+    public static Message fromJson(String str)
+            throws JsonProcessingException, StreamReadException, DatabindException {
+        ObjectMapper om = new ObjectMapper();
+        Message m = om.readValue(str, Message.class);
+        return m;
+    }
+
+    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply)
+            throws IllegalArgumentException {
+        // TODO:許可制か取り除くか要検討
+        if (text.matches(".*[\\p{Cntrl}&&[^\r\n\t]].*")) {
+            throw new IllegalArgumentException("illegal control characters are in message.");
+        }
+        return new Message(UUID.randomUUID().toString(), LocalDateTime.now(ZoneId.of("Asia/Tokyo")), text, userID,
+                userName, reply);
     }
 
     // methods
 
-    private static String escapeCsv(String input) {
-        input = input.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
-        if (input.contains(",") || input.contains("\"") || input.contains("\n")) {
-            input = input.replace("\"", "\"\"");
-        }
-        return input;
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        return om.writeValueAsString(this);
     }
 
-    public String toString() {
-        StringBuilder textBuilder = new StringBuilder();
-
-    }
-
-    public Message fromString(String str) {
-
-    }
 }

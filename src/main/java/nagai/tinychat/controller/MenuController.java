@@ -13,7 +13,7 @@ public class MenuController {
     }
 
     @GetMapping("/menubar")
-    public String MenuBar(){
+    public String MenuBar() {
         return "bar";
     }
 }
