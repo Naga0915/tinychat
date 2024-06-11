@@ -1,5 +1,10 @@
 package nagai.tinychat.bbs;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -9,6 +14,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import nagai.tinychat.util.TinyChatSecurity;
 import nagai.tinychat.util.TinyUtil;
 
 public class Board {
@@ -26,7 +32,7 @@ public class Board {
 
     // const
     private static boolean _IS_CONST_SET = false;
-    private static String MESSAGE_DIR;
+    private static String MESSAGE_DIR = null;
 
     private Board() {
     }
@@ -85,6 +91,13 @@ public class Board {
         return om.writeValueAsString(this);
     }
 
+    public boolean authenticate(String password) {
+        if (TinyChatSecurity.passwordCheck(password, passwordHash)) {
+            return true;
+        }
+        return false;
+    }
+
     // instance creation
 
     public static Board createBoard(String title, String userId, ArrayList<String> tags) {
@@ -93,17 +106,43 @@ public class Board {
         return b;
     }
 
-    public static Board fromJson(String str, ArrayList<Message> messages)
-            throws JsonProcessingException, StreamReadException, DatabindException {
+    public static Board fromJson(String str)
+            throws JsonProcessingException, StreamReadException, DatabindException, FileNotFoundException {
         ObjectMapper om = new ObjectMapper();
         Board b = om.readValue(str, Board.class);
-        b.setMessages(messages);
+        ArrayList<Message> m = loadMessagesFromFile(b.uuid);
+        b.setMessages(m);
         return b;
     }
 
     // file system
 
-    public static ArrayList<Message> loadMessagesFromFile() {
+    public static ArrayList<Message> loadMessagesFromFile(String uuid)
+            throws SecurityException, FileNotFoundException, UnsupportedOperationException {
+        if (MESSAGE_DIR == null)
+            throw new UnsupportedOperationException("tried to use MESSAGE_DIR before initializing");
 
+        File messageDir = new File(MESSAGE_DIR + uuid + ".txt");
+        ArrayList<Message> messages = new ArrayList<Message>();
+
+        if (!messageDir.exists()) {
+            throw new FileNotFoundException("specified message file does not exists.");
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(messageDir))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                try {
+                    Message m = Message.fromJson(line);
+                    messages.add(m);
+                } catch (Exception ee) {
+                    System.out.println(ee.getMessage());
+                    messages.add(Message.getEmptyMessage());
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return messages;
     }
 }

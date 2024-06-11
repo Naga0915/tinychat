@@ -19,6 +19,9 @@ public class Message {
     private String userName;
     private ArrayList<String> reply;
 
+    // empty message instance
+    private static Message emptyMessage = new Message("", LocalDateTime.MIN, "", "", "", new ArrayList<String>());
+
     private Message(String uuid, LocalDateTime time, String text, String userID, String userName,
             ArrayList<String> reply) {
         this.uuid = uuid;
@@ -51,6 +54,10 @@ public class Message {
 
     public ArrayList<String> getReply() {
         return reply;
+    }
+
+    public static Message getEmptyMessage() {
+        return emptyMessage;
     }
 
     // instance creation
