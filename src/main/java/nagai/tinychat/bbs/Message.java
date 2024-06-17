@@ -2,7 +2,6 @@ package nagai.tinychat.bbs;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -19,10 +18,6 @@ public class Message {
     private String userName;
     private ArrayList<String> reply;
     private boolean isHidden;
-
-    // empty message instance
-    private static final Message emptyMessage = new Message("", LocalDateTime.MIN, "", "", "", new ArrayList<String>(),
-            false);
 
     private Message(String uuid, LocalDateTime time, String text, String userID, String userName,
             ArrayList<String> reply, boolean isHidden) {
@@ -64,7 +59,13 @@ public class Message {
     }
 
     public static Message getEmptyMessage() {
-        return emptyMessage;
+        return new Message("", LocalDateTime.MIN, "", "", "", new ArrayList<String>(),
+                false);
+    }
+
+    public static Message getSystemMessage(String name, String message) {
+        return new Message("", LocalDateTime.MIN, message, "system", name, new ArrayList<String>(),
+                false);
     }
 
     // instance creation
@@ -76,12 +77,8 @@ public class Message {
         return m;
     }
 
-    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply, boolean isHidden)
-            throws IllegalArgumentException {
-        // TODO:許可制か取り除くか要検討
-        if (text.matches(".*[\\p{Cntrl}&&[^\r\n\t]].*")) {
-            throw new IllegalArgumentException("illegal control characters are in message.");
-        }
+    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply,
+            boolean isHidden) {
         return new Message(UUID.randomUUID().toString(), LocalDateTime.now(ZoneId.of("Asia/Tokyo")), text, userID,
                 userName, reply, isHidden);
     }

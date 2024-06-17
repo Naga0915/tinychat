@@ -10,3 +10,4 @@ public class AppProperties {
         return dataDirectory;
     }
 }
+    
