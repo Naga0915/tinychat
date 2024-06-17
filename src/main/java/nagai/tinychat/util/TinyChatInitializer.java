@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import nagai.tinychat.bbs.BBSService;
 import nagai.tinychat.bbs.Board;
 
 @Component
@@ -38,7 +39,11 @@ public class TinyChatInitializer implements ApplicationListener<ContextRefreshed
         } catch (UnsupportedOperationException e) {
             System.out.println(e.getMessage());
         }
-
+        try {
+            BBSService.setConst(bbsListFile.getPath());
+        } catch (UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void createIfNotExist(File file) throws SecurityException {

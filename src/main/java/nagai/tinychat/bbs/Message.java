@@ -18,18 +18,21 @@ public class Message {
     private String userID;
     private String userName;
     private ArrayList<String> reply;
+    private boolean isHidden;
 
     // empty message instance
-    private static Message emptyMessage = new Message("", LocalDateTime.MIN, "", "", "", new ArrayList<String>());
+    private static final Message emptyMessage = new Message("", LocalDateTime.MIN, "", "", "", new ArrayList<String>(),
+            false);
 
     private Message(String uuid, LocalDateTime time, String text, String userID, String userName,
-            ArrayList<String> reply) {
+            ArrayList<String> reply, boolean isHidden) {
         this.uuid = uuid;
         this.time = time;
         this.text = text;
         this.userID = userID;
         this.userName = userName;
         this.reply = reply;
+        this.isHidden = isHidden;
     }
 
     public String getUuid() {
@@ -56,6 +59,10 @@ public class Message {
         return reply;
     }
 
+    public boolean getIsHidden() {
+        return isHidden;
+    }
+
     public static Message getEmptyMessage() {
         return emptyMessage;
     }
@@ -69,14 +76,14 @@ public class Message {
         return m;
     }
 
-    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply)
+    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply, boolean isHidden)
             throws IllegalArgumentException {
         // TODO:許可制か取り除くか要検討
         if (text.matches(".*[\\p{Cntrl}&&[^\r\n\t]].*")) {
             throw new IllegalArgumentException("illegal control characters are in message.");
         }
         return new Message(UUID.randomUUID().toString(), LocalDateTime.now(ZoneId.of("Asia/Tokyo")), text, userID,
-                userName, reply);
+                userName, reply, isHidden);
     }
 
     // methods
@@ -86,4 +93,7 @@ public class Message {
         return om.writeValueAsString(this);
     }
 
+    public void hide() {
+        this.isHidden = true;
+    }
 }

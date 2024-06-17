@@ -24,11 +24,14 @@ public class Board {
     private String userId;
     private ArrayList<String> tags;
     private String passwordHash;
+    private boolean isHidden;
 
     @JsonIgnore
     private ArrayList<Message> messages;
-
+    @JsonIgnore
     private boolean isChanged;
+    @JsonIgnore
+    private int lastChange;
 
     // const
     private static boolean _IS_CONST_SET = false;
@@ -38,13 +41,14 @@ public class Board {
     }
 
     private Board(String uuid, String title, String userId, ArrayList<String> tags, String passwordHash,
-            ArrayList<Message> messages) {
+            ArrayList<Message> messages, boolean isHidden) {
         this.uuid = uuid;
         this.title = title;
         this.userId = userId;
         this.tags = tags;
         this.passwordHash = passwordHash;
         this.messages = messages;
+        this.isHidden = isHidden;
 
         this.isChanged = false;
     }
@@ -65,6 +69,14 @@ public class Board {
 
     public ArrayList<String> getTags() {
         return tags;
+    }
+
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
     }
 
     public static String getMessageDir() {
@@ -98,11 +110,24 @@ public class Board {
         return false;
     }
 
+    public void addMessage(Message m) {
+        this.messages.add(m);
+    }
+
+    public void deleteMessage(String uuid) {
+        for (Message m : messages) {
+            if (m.getUuid() == uuid) {
+                m.hide();
+                break;
+            }
+        }
+    }
+
     // instance creation
 
-    public static Board createBoard(String title, String userId, ArrayList<String> tags) {
+    public static Board createBoard(String title, String userId, ArrayList<String> tags, boolean isHidden) {
         Board b = new Board(UUID.randomUUID().toString(), TinyUtil.removeAllCtlChar(title), userId, tags, userId,
-                new ArrayList<Message>());
+                new ArrayList<Message>(), isHidden);
         return b;
     }
 
@@ -134,7 +159,11 @@ public class Board {
             while ((line = br.readLine()) != null) {
                 try {
                     Message m = Message.fromJson(line);
-                    messages.add(m);
+                    if (m.getIsHidden()) {
+                        messages.add(Message.getEmptyMessage());
+                    } else {
+                        messages.add(m);
+                    }
                 } catch (Exception ee) {
                     System.out.println(ee.getMessage());
                     messages.add(Message.getEmptyMessage());
