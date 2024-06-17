@@ -33,10 +33,6 @@ public class Board {
     @JsonIgnore
     private int lastChange;
 
-    // const
-    private static boolean _IS_CONST_SET = false;
-    private static String MESSAGE_DIR = null;
-
     private Board() {
     }
 
@@ -79,21 +75,10 @@ public class Board {
         return isHidden;
     }
 
-    public static String getMessageDir() {
-        return MESSAGE_DIR;
-    }
-
     // setter
 
     public void setMessages(ArrayList<Message> messages) {
         this.messages = messages;
-    }
-
-    public static void setConst(String messageDir) throws UnsupportedOperationException {
-        if (_IS_CONST_SET)
-            throw new UnsupportedOperationException("static values are already set.");
-        _IS_CONST_SET = true;
-        MESSAGE_DIR = messageDir;
     }
 
     // methods
@@ -124,7 +109,7 @@ public class Board {
     }
 
     // instance creation
-
+    
     public static Board createBoard(String title, String userId, ArrayList<String> tags, boolean isHidden) {
         Board b = new Board(UUID.randomUUID().toString(), TinyUtil.removeAllCtlChar(title), userId, tags, userId,
                 new ArrayList<Message>(), isHidden);
@@ -135,43 +120,6 @@ public class Board {
             throws JsonProcessingException, StreamReadException, DatabindException, FileNotFoundException {
         ObjectMapper om = new ObjectMapper();
         Board b = om.readValue(str, Board.class);
-        ArrayList<Message> m = loadMessagesFromFile(b.uuid);
-        b.setMessages(m);
         return b;
-    }
-
-    // file system
-
-    public static ArrayList<Message> loadMessagesFromFile(String uuid)
-            throws SecurityException, FileNotFoundException, UnsupportedOperationException {
-        if (MESSAGE_DIR == null)
-            throw new UnsupportedOperationException("tried to use MESSAGE_DIR before initializing");
-
-        File messageDir = new File(MESSAGE_DIR + uuid + ".txt");
-        ArrayList<Message> messages = new ArrayList<Message>();
-
-        if (!messageDir.exists()) {
-            throw new FileNotFoundException("specified message file does not exists.");
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(messageDir))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                try {
-                    Message m = Message.fromJson(line);
-                    if (m.getIsHidden()) {
-                        messages.add(Message.getEmptyMessage());
-                    } else {
-                        messages.add(m);
-                    }
-                } catch (Exception ee) {
-                    System.out.println(ee.getMessage());
-                    messages.add(Message.getEmptyMessage());
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return messages;
     }
 }

@@ -9,12 +9,13 @@ import nagai.tinychat.bbs.Board;
 
 @Repository
 public class BBSBoardRepository {
-    private ArrayList<Board> boardData;
+    private ArrayList<String> boardData;
     private int lastSaveBoard;
     private int lastLoadBoard;
 
     public BBSBoardRepository() {
-        boardData = new ArrayList<Board>();
+        boardData = new ArrayList<String>();
+        loadBoard();
     }
 
     public void loadBoard() {
@@ -25,5 +26,4 @@ public class BBSBoardRepository {
 
     }
 
-    
 }
