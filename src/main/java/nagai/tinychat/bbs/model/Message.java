@@ -1,4 +1,4 @@
-package nagai.tinychat.bbs;
+package nagai.tinychat.bbs.model;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

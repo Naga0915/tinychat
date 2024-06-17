@@ -1,4 +1,4 @@
-package nagai.tinychat.bbs.service;
+package nagai.tinychat.bbs.repository;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Repository;
 
-import nagai.tinychat.bbs.Message;
+import nagai.tinychat.bbs.model.Message;
 
 @Repository
-public class BBSMessageRepository {
-        public static ArrayList<Message> loadMessagesFromFile(String uuid)
+public class BBSMessageRepositoryImpl implements MessageRepository {
+    public static ArrayList<Message> loadMessagesFromFile(String uuid)
             throws SecurityException, FileNotFoundException, UnsupportedOperationException {
         if (MESSAGE_DIR == null)
             throw new UnsupportedOperationException("tried to use MESSAGE_DIR before initializing");

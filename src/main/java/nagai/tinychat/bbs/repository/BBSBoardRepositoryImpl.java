@@ -1,15 +1,15 @@
-package nagai.tinychat.bbs.service;
+package nagai.tinychat.bbs.repository;
 
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import nagai.tinychat.bbs.Board;
+import nagai.tinychat.bbs.model.Board;
 import nagai.tinychat.util.AppProperties;
 
 @Repository
-public class BBSBoardRepository {
+public class BBSBoardRepositoryImpl implements BoardRepository {
     private ArrayList<String> boardData;
     private int lastSaveBoard;
     private int lastLoadBoard;
@@ -17,7 +17,7 @@ public class BBSBoardRepository {
     private AppProperties properties;
 
     @Autowired
-    public BBSBoardRepository(AppProperties properties) {
+    public BBSBoardRepositoryImpl(AppProperties properties) {
         this.properties = properties;
         boardData = new ArrayList<String>();
         loadBoard();

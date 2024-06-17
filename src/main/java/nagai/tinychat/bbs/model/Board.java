@@ -1,4 +1,4 @@
-package nagai.tinychat.bbs;
+package nagai.tinychat.bbs.model;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
