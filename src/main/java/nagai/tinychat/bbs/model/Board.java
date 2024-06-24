@@ -69,11 +69,21 @@ public class Board {
         return false;
     }
 
+    public void hide() {
+        this.isHidden = true;
+    }
+
     // instance creation
 
-    public static Board createNewBoard(String title, String userId, ArrayList<String> tags, boolean isHidden) {
-        Board b = new Board(UUID.randomUUID().toString(), TinyUtil.removeAllCtlChar(title), userId, tags, userId,
-                isHidden);
+    public static Board createNewBoard(String title, String userId, ArrayList<String> tags, String password) {
+        Board b;
+        if (password.isEmpty()) {
+            b = new Board(UUID.randomUUID().toString(), TinyUtil.removeAllCtlChar(title), userId, tags,
+                    "", false);
+        } else {
+            b = new Board(UUID.randomUUID().toString(), TinyUtil.removeAllCtlChar(title), userId, tags,
+                    TinyChatSecurity.generateSaltedHash(password), false);
+        }
         return b;
     }
 

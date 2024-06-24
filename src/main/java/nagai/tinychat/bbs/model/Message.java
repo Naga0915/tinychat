@@ -2,7 +2,6 @@ package nagai.tinychat.bbs.model;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,17 +15,15 @@ public class Message {
     private String text;
     private String userID;
     private String userName;
-    private ArrayList<String> reply;
     private boolean isHidden;
 
     private Message(String uuid, LocalDateTime time, String text, String userID, String userName,
-            ArrayList<String> reply, boolean isHidden) {
+            boolean isHidden) {
         this.uuid = uuid;
         this.time = time;
         this.text = text;
         this.userID = userID;
         this.userName = userName;
-        this.reply = reply;
         this.isHidden = isHidden;
     }
 
@@ -50,21 +47,17 @@ public class Message {
         return userName;
     }
 
-    public ArrayList<String> getReply() {
-        return reply;
-    }
-
     public boolean getIsHidden() {
         return isHidden;
     }
 
     public static Message getEmptyMessage() {
-        return new Message("", LocalDateTime.MIN, "", "", "", new ArrayList<String>(),
+        return new Message("", LocalDateTime.MIN, "", "", "",
                 false);
     }
 
     public static Message getSystemMessage(String name, String message) {
-        return new Message("", LocalDateTime.MIN, message, "system", name, new ArrayList<String>(),
+        return new Message("", LocalDateTime.MIN, message, "system", name,
                 false);
     }
 
@@ -77,10 +70,10 @@ public class Message {
         return m;
     }
 
-    public Message creatMessage(String userID, String userName, String text, ArrayList<String> reply,
+    public Message creatMessage(String userID, String userName, String text,
             boolean isHidden) {
         return new Message(UUID.randomUUID().toString(), LocalDateTime.now(ZoneId.of("Asia/Tokyo")), text, userID,
-                userName, reply, isHidden);
+                userName, isHidden);
     }
 
     // methods

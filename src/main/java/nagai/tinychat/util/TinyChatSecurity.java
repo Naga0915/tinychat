@@ -12,21 +12,22 @@ public class TinyChatSecurity {
     }
 
     public static boolean passwordCheck(String password, String saltedHash) {
-        try {
-            if(generateSaltedHash(password) == saltedHash){
-                return true;
-            }
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e.getMessage());
+        if (generateSaltedHash(password) == saltedHash) {
+            return true;
         }
         return false;
     }
 
-    public static String generateSaltedHash(String text) throws NoSuchAlgorithmException {
+    public static String generateSaltedHash(String text) {
         String saltedPassword = getHashSalt() + text;
-        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        MessageDigest sha256;
+        try {
+            sha256 = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e.getMessage());
+            return e.toString();
+        }
         byte[] sha256Byte = sha256.digest(saltedPassword.getBytes());
-
         HexFormat hex = HexFormat.of().withLowerCase();
         return hex.formatHex(sha256Byte);
     }
